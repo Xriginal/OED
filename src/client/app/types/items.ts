@@ -63,3 +63,11 @@ export enum UserRole {
 	EXPORT = 'export',
 	OBVIUS = 'obvius'
 };
+export interface Conversion {
+	source_id: number;
+	destination_id: number;
+	bidirectional: boolean;
+	slope: number;
+	intercept: number;
+	note: string;
+};
