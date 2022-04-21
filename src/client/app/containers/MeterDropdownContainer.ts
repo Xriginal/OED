@@ -8,6 +8,12 @@ import { updateSelectedMeter } from '../actions/admin';
 import MeterDropdownComponent from '../components/MeterDropDownComponent';
 import { State } from '../types/redux/state';
 import { Dispatch } from '../types/redux/actions';
+import { Units } from '../types/redux/units'
+import { metersInGroup, setIntersect, unitsCompatibleWithMeters } from '../utils/determineCompatibleUnits';
+import { changeSelectedGroups, changeSelectedMeters, changeSelectedUnit } from '../actions/graph';
+import { UpdateImportMeterAction } from '../types/redux/admin';
+import meters from 'reducers/meters';
+
 
 /**
  * @param {State} state
@@ -23,4 +29,36 @@ function mapDispatchToProps(dispatch: Dispatch) {
 	};
 }
 
+export function getvisibleMeters(state: State)
+{
+	if(state.admin)
+	{
+		visibleMeters = Meters.getNoUnitNotNull()
+	}
+	else
+	{
+		visibleMeters = Meters.getDisplayable()
+	}
+	let compatibleMeters = new Set<number>();
+	let incompatibleMeters = new Set<number>();
+	let M = new Set<number>();
+	if(graphicUnit === -99 )
+	{
+		compatibleMeters = visibleMeters;
+	}
+	else
+	{
+		state.meters.isFetching(state).forEach(M => {
+			const newUnits = unitsCompatibleWithMeters({M})
+			if(Units)
+			{
+				compatibleMeters.add(M.id);
+			}
+			else
+			{
+				incompatibleMeters.add(M.id);
+			}
+		}
+	}
+}
 export default connect(mapStateToProps, mapDispatchToProps)(MeterDropdownComponent);
