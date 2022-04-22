@@ -1,6 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+/* Testing stuff and saving stuff just in case my computer bricks */
 
 import * as _ from 'lodash';
 import { connect } from 'react-redux';
@@ -8,12 +9,8 @@ import { updateSelectedMeter } from '../actions/admin';
 import MeterDropdownComponent from '../components/MeterDropDownComponent';
 import { State } from '../types/redux/state';
 import { Dispatch } from '../types/redux/actions';
-import { Units } from '../types/redux/units'
+import { MeterMetadata, MetersState,  } from  '../types/redux/meters';
 import { metersInGroup, setIntersect, unitsCompatibleWithMeters } from '../utils/determineCompatibleUnits';
-import { changeSelectedGroups, changeSelectedMeters, changeSelectedUnit } from '../actions/graph';
-import { UpdateImportMeterAction } from '../types/redux/admin';
-import meters from 'reducers/meters';
-
 
 /**
  * @param {State} state
@@ -28,37 +25,52 @@ function mapDispatchToProps(dispatch: Dispatch) {
 		updateSelectedMeter: (meterID: number) => dispatch(updateSelectedMeter(meterID))
 	};
 }
+export function getNoUnitNotNull()
+{
+
+}
+export function getDisplayable()
+{
+	
+}
 
 export function getvisibleMeters(state: State)
 {
+	let visibleMeters = null;
 	if(state.admin)
 	{
-		visibleMeters = Meters.getNoUnitNotNull()
+		visibleMeters = getNoUnitNotNull()
+		//state.meters.isFetching.valueOf 
 	}
+	
 	else
 	{
-		visibleMeters = Meters.getDisplayable()
+		visibleMeters = getDisplayable()
 	}
 	let compatibleMeters = new Set<number>();
 	let incompatibleMeters = new Set<number>();
 	let M = new Set<number>();
-	if(graphicUnit === -99 )
+	if(state.graph.selectedMeters[1] === -99)
 	{
-		compatibleMeters = visibleMeters;
+		compatibleMeters.add(visibleMeters);
 	}
 	else
 	{
-		state.meters.isFetching(state).forEach(M => {
+		state.graph.selectedMeters.forEach(meter => {
+			M.add(meter)
 			const newUnits = unitsCompatibleWithMeters({M})
-			if(Units)
+			if(newUnits)
 			{
-				compatibleMeters.add(M.id);
+				compatibleMeters.add(M);
 			}
 			else
 			{
-				incompatibleMeters.add(M.id);
+				incompatibleMeters.add(M);
 			}
 		}
-	}
+	})
+
 }
+
 export default connect(mapStateToProps, mapDispatchToProps)(MeterDropdownComponent);
+}
